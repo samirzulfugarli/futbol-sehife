@@ -1,0 +1,28 @@
+name: Yenile
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  yenile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sehifeni yarat
+        run: python generate.py
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+      - name: Deyisiklik varsa yaz
+        run: |
+          git config user.name "yenile-bot"
+          git config user.email "yenile-bot@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "yenilendi" && git push)
