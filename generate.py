@@ -150,6 +150,10 @@ def xeberler_html():
                 basliq = basliq[: -len(" - " + menbe)]
             if not basliq or not link.startswith("http"):
                 continue
+            if "todaypress.tv" in (menbe + " " + link).lower():
+                continue    
+            if "TodayPress.tv" in menbe:
+                continue     
             if "abb" in basliq.lower() or "abb-bank.az" in link.lower() or "abb-bank.az" in menbe.lower():
                 continue
             if any("\u0400" <= c <= "\u04FF" for c in basliq):
