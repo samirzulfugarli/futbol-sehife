@@ -458,5 +458,6 @@ def main():
 
 
 if __name__ == "__main__":
+    telegrama_gonder("⚽ FUTBOL AZ\n\nTelegram botu uğurla işləyir! ✅")
     main()
 
