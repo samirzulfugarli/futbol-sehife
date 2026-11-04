@@ -1,3 +1,4 @@
+
 name: Yenile
 
 on:
@@ -8,19 +9,29 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: futbol-sehife-main
+  cancel-in-progress: false
+
 jobs:
   yenile:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Sehifeni yarat
-        run: python generate.py
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-            - name: Deyisiklik varsa yaz
+        run: python generate.py
+
+      - name: Deyisiklik varsa yaz
         run: |
           git config user.name "yenile-bot"
           git config user.email "yenile-bot@users.noreply.github.com"
