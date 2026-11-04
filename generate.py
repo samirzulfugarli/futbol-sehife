@@ -128,9 +128,11 @@ def matclar_html(matclar, now):
     return "\n".join(cixis)
 
 
+
 def xeberler_html():
     indi = time.time()
     netice = {}
+
     for sorgu in SORGULAR:
         url = (
             "https://news.google.com/rss/search?q="
@@ -142,46 +144,242 @@ def xeberler_html():
         except Exception as e:
             print("RSS xetasi:", e)
             continue
+
         for it in root.iter("item"):
             basliq = (it.findtext("title") or "").strip()
             link = (it.findtext("link") or "").strip()
             menbe = (it.findtext("source") or "").strip()
+
             if menbe and basliq.endswith(" - " + menbe):
                 basliq = basliq[: -len(" - " + menbe)]
+
             if not basliq or not link.startswith("http"):
                 continue
             if "todaypress.tv" in (menbe + " " + link).lower():
-                continue    
-            if "TodayPress.tv" in menbe:
-                continue     
+                continue
             if "abb" in basliq.lower() or "abb-bank.az" in link.lower() or "abb-bank.az" in menbe.lower():
                 continue
             if any("\u0400" <= c <= "\u04FF" for c in basliq):
                 continue
+
             kicik = basliq.lower()
             if len(basliq) < 20 or not any(s in kicik for s in SOZLER):
                 continue
+
             try:
-                ts = email.utils.parsedate_to_datetime(it.findtext("pubDate")).timestamp()
+                ts = email.utils.parsedate_to_datetime(
+                    it.findtext("pubDate")
+                ).timestamp()
             except Exception:
                 continue
-            # gələcək tarixli və 3 gündən köhnə xəbərləri at
+
             if ts > indi + 3600 or indi - ts > 3 * 86400:
                 continue
-            netice[basliq.lower()] = (ts, basliq, menbe, link)
+
+            netice[link] = (ts, basliq, menbe, link)
+
     sirali = sorted(netice.values(), reverse=True)[:12]
+
     if not sirali:
-        return "<p>Hələ yeni xəbər yoxdur.</p>"
+        return "<p>Hələ yeni xəbər yoxdur.</p>", []
+
     cixis = ["<ul class='xeber'>"]
+
     for ts, basliq, menbe, link in sirali:
-        vaxt = datetime.datetime.fromtimestamp(ts, BAKU).strftime("%d.%m %H:%M")
+        vaxt = datetime.datetime.fromtimestamp(
+            ts, BAKU
+        ).strftime("%d.%m %H:%M")
+
         cixis.append(
             f'<li><a href="{html.escape(link)}" target="_blank" rel="noopener noreferrer">'
             f"{html.escape(basliq)}</a>"
             f'<span class="meta">{html.escape(menbe)} · {vaxt}</span></li>'
         )
+
     cixis.append("</ul>")
-    return "\n".join(cixis)
+    return "\n".join(cixis), sirali
+
+
+STATE_FILE = "telegram_state.json"
+
+
+def telegrama_gonder(metn):
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+
+    if not token or not chat_id:
+        raise RuntimeError("Telegram token və ya chat ID tapılmadı")
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": metn,
+        "disable_web_page_preview": "true",
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+
+    with urllib.request.urlopen(req, timeout=30) as r:
+        cavab = json.loads(r.read().decode("utf-8"))
+
+    if not cavab.get("ok"):
+        raise RuntimeError(f"Telegram xətası: {cavab}")
+
+
+def state_yaz(state):
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+
+
+def telegram_yenilikleri(matclar, xeberler, now):
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+
+    if not token or not chat_id:
+        raise RuntimeError("Telegram məlumatları GitHub Secrets-də tapılmadı")
+
+    if os.path.exists(STATE_FILE):
+        with open(STATE_FILE, "r", encoding="utf-8") as f:
+            state = json.load(f)
+    else:
+        state = {
+            "initialized": False,
+            "news": [],
+            "fixtures": {}
+        }
+
+    if not state.get("initialized"):
+        state["news"] = [x[3] for x in xeberler]
+
+        bas, son = gunun_penceresi(now)
+        for m in matclar:
+            if m["league"]["id"] not in LIQALAR:
+                continue
+            if not (bas <= m["fixture"]["timestamp"] < son):
+                continue
+
+            fid = str(m["fixture"]["id"])
+            state["fixtures"][fid] = fixture_melumat(m)
+
+        state["initialized"] = True
+        state_yaz(state)
+        print("İlkin məlumatlar yaddaşa yazıldı. Təkrar paylaşım edilmədi.")
+        return
+
+    gorulmus_xeberler = set(state.get("news", []))
+    evvelki_matclar = state.get("fixtures", {})
+    yeni_matclar = dict(evvelki_matclar)
+
+    mesajlar = []
+
+    # Yeni xəbərləri tap
+    for ts, basliq, menbe, link in reversed(xeberler):
+        if link not in gorulmus_xeberler:
+            mesajlar.append(
+                f"📰 YENİ FUTBOL XƏBƏRİ\n\n"
+                f"{basliq}\n"
+                f"Mənbə: {menbe}\n"
+                f"{link}"
+            )
+            gorulmus_xeberler.add(link)
+
+    # Yeni matçları və hesab dəyişikliklərini tap
+    bas, son = gunun_penceresi(now)
+
+    for m in matclar:
+        if m["league"]["id"] not in LIQALAR:
+            continue
+        if not (bas <= m["fixture"]["timestamp"] < son):
+            continue
+
+        fid = str(m["fixture"]["id"])
+        cari = fixture_melumat(m)
+        kohne = evvelki_matclar.get(fid)
+
+        ev = cari["home"]
+        qonaq = cari["away"]
+        liqa = cari["league"]
+        hesab_text = f'{cari["home_goals"]} : {cari["away_goals"]}'
+        status = cari["status"]
+
+        if kohne is None:
+            mesajlar.append(
+                f"⚽ YENİ MATÇ\n\n"
+                f"{liqa}\n{ev} - {qonaq}\n"
+                f"Başlama vaxtı: {cari['date'][11:16]}"
+            )
+        else:
+            kohne_hesab = (
+                kohne.get("home_goals"),
+                kohne.get("away_goals")
+            )
+            cari_hesab = (
+                cari["home_goals"],
+                cari["away_goals"]
+            )
+
+            kohne_bitib = kohne.get("status") in ("FT", "AET", "PEN")
+            cari_bitib = status in ("FT", "AET", "PEN")
+
+            if cari_bitib and not kohne_bitib:
+                mesajlar.append(
+                    f"🏁 MATÇ BAŞA ÇATDI\n\n"
+                    f"{liqa}\n{ev} {hesab_text} {qonaq}\n"
+                    f"Yekun nəticə: {STATUS_AD.get(status, status)}"
+                )
+            elif cari_hesab != kohne_hesab:
+                mesajlar.append(
+                    f"⚽ HESAB DƏYİŞDİ\n\n"
+                    f"{liqa}\n{ev} {hesab_text} {qonaq}\n"
+                    f"Status: {STATUS_AD.get(status, status)}"
+                )
+
+        yeni_matclar[fid] = cari
+
+    # Mesajları Telegram-a göndər
+    if mesajlar:
+        hisseler = []
+        cari_hisse = "⚽ FUTBOL AZ — YENİLİKLƏR\n\n"
+
+        for mesaj in mesajlar:
+            if len(cari_hisse) + len(mesaj) + 2 > 3500:
+                hisseler.append(cari_hisse)
+                cari_hisse = "⚽ FUTBOL AZ — DAVAMI\n\n"
+
+            cari_hisse += mesaj + "\n\n"
+
+        if cari_hisse.strip():
+            hisseler.append(cari_hisse)
+
+        for hisse in hisseler:
+            telegrama_gonder(hisse)
+
+        print("Telegram paylaşımı göndərildi:", len(mesajlar))
+    else:
+        print("Telegram üçün yeni məlumat yoxdur.")
+
+    state["news"] = list(gorulmus_xeberler)[-500:]
+    state["fixtures"] = yeni_matclar
+    state_yaz(state)
+
+
+def fixture_melumat(m):
+    f = m["fixture"]
+    return {
+        "home": m["teams"]["home"]["name"],
+        "away": m["teams"]["away"]["name"],
+        "league": m["league"]["name"],
+        "date": f["date"],
+        "status": f["status"]["short"],
+        "home_goals": m["goals"]["home"],
+        "away_goals": m["goals"]["away"],
+    }
 
 
 SABLON = """<!DOCTYPE html>
@@ -237,19 +435,28 @@ footer { margin:24px 0; font-size:.8rem; color:var(--muted); }
 """
 
 
+
 def main():
     now = datetime.datetime.now(BAKU)
     matclar = matclar_cek(now)
+
+    xeber_html, xeberler = xeberler_html()
+
+    telegram_yenilikleri(matclar, xeberler, now)
+
     sehife = (
         SABLON.replace("__KANAL__", KANAL)
         .replace("__YENILENIB__", now.strftime("%d.%m.%Y %H:%M"))
         .replace("__MATCLAR__", matclar_html(matclar, now))
-        .replace("__XEBERLER__", xeberler_html())
+        .replace("__XEBERLER__", xeber_html)
     )
+
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(sehife)
+
     print("index.html yaradildi")
 
 
 if __name__ == "__main__":
     main()
+
