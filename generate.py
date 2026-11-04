@@ -37,9 +37,14 @@ LIQALAR = {
 }
 
 SOZLER = [
-    "futbol", "qol", "matç", "oyun", "liqa", "komanda", "kubok", "çempion",
-    "transfer", "məşqçi", "qarabağ", "neftçi", "sabah", "zirə", "sumqayıt",
-    "qəbələ", "məğlub", "qalib", "heç-heçə", "yığma", "milli", "uefa", "affa",
+    "futbol", "qol", "matç", "oyun", "liqa", "komanda", "kubok",
+    "çempion", "transfer", "məşqçi", "qarabağ", "neftçi", "sabah",
+    "zirə", "sumqayıt", "qəbələ", "məğlub", "qalib", "heç-heçə",
+    "yığma", "milli", "uefa", "affa", "premyer liqa",
+    "real madrid", "barcelona", "liverpool", "arsenal",
+    "manchester city", "champions league", "avropa liqası",
+    "çempionlar liqası", "fənərbaxça", "qalatasaray",
+    "besiktas", "futbolçu", "baş məşqçi", "stadion",
 ]
 
 STATUS_AD = {
