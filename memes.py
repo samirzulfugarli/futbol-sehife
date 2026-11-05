@@ -97,26 +97,60 @@ def make_meme(top, middle, bottom, footer):
 
 def send_photo(img, caption):
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
-    if not token or not chat_id:
-        raise RuntimeError("Telegram token və ya chat ID tapılmadı")
+    admin_id = os.environ.get("TELEGRAM_ADMIN_ID", "").strip()
+
+    if not token or not admin_id:
+        raise RuntimeError("TELEGRAM_BOT_TOKEN və ya TELEGRAM_ADMIN_ID tapılmadı")
+
     buf = BytesIO()
     img.save(buf, format="JPEG", quality=90, optimize=True)
+
     boundary = "----FutbolAzBoundary7MA4YWxkTrZu0gW"
+    keyboard = {
+        "inline_keyboard": [[
+            {"text": "✅ Paylaş", "callback_data": "share"},
+            {"text": "❌ Ləğv et", "callback_data": "cancel"}
+        ]]
+    }
+
     body = bytearray()
-    for name, value in (("chat_id", chat_id), ("caption", caption[:900])):
-        body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode("utf-8"))
-    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"futbolaz_meme.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n".encode())
+
+    fields = [
+        ("chat_id", admin_id),
+        ("caption", caption[:900]),
+        ("reply_markup", json.dumps(keyboard, ensure_ascii=False))
+    ]
+
+    for name, value in fields:
+        body.extend(
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="{name}"\r\n\r\n'
+            f"{value}\r\n".encode("utf-8")
+        )
+
+    body.extend(
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="photo"; filename="futbolaz_meme.jpg"\r\n'
+        "Content-Type: image/jpeg\r\n\r\n".encode()
+    )
     body.extend(buf.getvalue())
     body.extend(f"\r\n--{boundary}--\r\n".encode())
+
     req = urllib.request.Request(
-        f"https://api.telegram.org/bot{token}/sendPhoto", data=bytes(body),
-        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"}, method="POST"
+        f"https://api.telegram.org/bot{token}/sendPhoto",
+        data=bytes(body),
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        method="POST"
     )
+
     with urllib.request.urlopen(req, timeout=45) as response:
         result = json.loads(response.read().decode("utf-8"))
+
     if not result.get("ok"):
         raise RuntimeError(f"Telegram şəkil xətası: {result}")
+
+    print("Meme şəxsi Telegram-a təsdiq üçün göndərildi.")
+    return result
 
 
 def avtomatik_mem_paylas(matclar, xeberler, now):
