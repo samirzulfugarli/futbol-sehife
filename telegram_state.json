@@ -133,8 +133,8 @@
       "away": "Xankəndi FK",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "HT",
-      "home_goals": 0,
+      "status": "FT",
+      "home_goals": 1,
       "away_goals": 1
     },
     "1630461": {
@@ -142,16 +142,16 @@
       "away": "Şimal",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "HT",
-      "home_goals": 2,
-      "away_goals": 0
+      "status": "FT",
+      "home_goals": 4,
+      "away_goals": 1
     },
     "1630463": {
       "home": "Səbail",
       "away": "Cəbrayıl",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "1H",
+      "status": "FT",
       "home_goals": 2,
       "away_goals": 2
     },
@@ -160,7 +160,7 @@
       "away": "MOIK",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "HT",
+      "status": "FT",
       "home_goals": 1,
       "away_goals": 1
     },
@@ -169,153 +169,153 @@
       "away": "Ferencvarosi TC",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636211": {
       "home": "Anderlecht",
       "away": "Red Bull Salzburg",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 1,
+      "away_goals": 0
     },
     "1636254": {
       "home": "Crystal Palace",
       "away": "1899 Hoffenheim",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636286": {
       "home": "Levski Sofia",
       "away": "Jagiellonia",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636289": {
       "home": "Lillestrom",
       "away": "Plzen",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636302": {
       "home": "NEC Nijmegen",
       "away": "Omonia Nicosia",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636319": {
       "home": "Real Sociedad",
       "away": "Lyon",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 1,
+      "away_goals": 0
     },
     "1636337": {
       "home": "Sparta Praha",
       "away": "Bournemouth",
       "league": "UEFA Europa League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 1,
+      "away_goals": 0
     },
     "1636376": {
       "home": "Aarhus",
       "away": "SC Braga",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636383": {
       "home": "Atalanta",
       "away": "Kairat Almaty",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636399": {
       "home": "FK Crvena Zvezda",
       "away": "Inter Club d'Escaldes",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636439": {
       "home": "KuPS",
       "away": "Gent",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636444": {
       "home": "Lincoln Red Imps FC",
       "away": "HNK Hajduk Split",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636448": {
       "home": "FC Midtjylland",
       "away": "Ajax",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "1H",
+      "home_goals": 1,
+      "away_goals": 1
     },
     "1636452": {
       "home": "Mjallby AIF",
       "away": "Borac Banja Luka",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 0
     },
     "1636473": {
       "home": "FC Thun",
       "away": "Heart Of Midlothian",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "1H",
+      "home_goals": 2,
+      "away_goals": 0
     },
     "1636476": {
       "home": "Trabzonspor",
       "away": "SC Freiburg",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-05T21:45:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636219": {
       "home": "AZ Alkmaar",
