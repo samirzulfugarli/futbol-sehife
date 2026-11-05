@@ -61,72 +61,72 @@
       "away": "Wolves",
       "league": "Championship",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 2
     },
     "1635651": {
       "home": "Borussia Dortmund",
       "away": "Real Betis",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 1
     },
     "1635656": {
       "home": "FC Porto",
       "away": "Napoli",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 4,
+      "away_goals": 1
     },
     "1635681": {
       "home": "Lens",
       "away": "Como",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 9
     },
     "1635707": {
       "home": "PSV Eindhoven",
       "away": "Club Brugge KV",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 2
     },
     "1635710": {
       "home": "RB Leipzig",
       "away": "Manchester City",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 3
     },
     "1635726": {
       "home": "Slavia Praha",
       "away": "Arsenal",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 2
     },
     "1635745": {
       "home": "Viking",
       "away": "Sabah FA",
       "league": "UEFA Champions League",
       "date": "2026-11-05T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 4,
+      "away_goals": 1
     }
   }
 }
