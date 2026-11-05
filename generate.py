@@ -464,6 +464,5 @@ if __name__ == "__main__":
             "⚽ FUTBOL AZ\n\nTelegram botu uğurla işləyir! ✅"
         )
         print("Test mesajı göndərildi.")
-    samir
     main()
 
