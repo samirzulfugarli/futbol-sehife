@@ -122,25 +122,39 @@ def send_photo(img, caption):
 def avtomatik_mem_paylas(matclar, xeberler, now):
     test_mode = os.environ.get("TELEGRAM_MEME_TEST") == "1"
     slot = "gunorta" if test_mode else SLOTS.get(now.hour)
+
     if not slot:
         return
+
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r", encoding="utf-8") as f:
             state = json.load(f)
     else:
         state = {"initialized": False, "news": [], "fixtures": {}}
+
     posted = state.setdefault("meme_slots", {})
     today = now.strftime("%Y-%m-%d")
+
     if not test_mode and slot in posted.get(today, []):
-    print(f"{slot} memi artıq paylaşılıb.")
-    return
+        print(f"{slot} memi artıq paylaşılıb.")
+        return
+
     top, middle, bottom, footer = meme_text(matclar, xeberler, slot)
     img = make_meme(top, middle, bottom, footer)
+
     caption = f"😂 {top}\n\n{middle}\n{bottom}\n\n⚽ @futbolaz_official"
+
     send_photo(img, caption)
-    posted.setdefault(today, []).append(slot)
-    cutoff = (now.date() - datetime.timedelta(days=14)).isoformat()
-    state["meme_slots"] = {day: slots for day, slots in posted.items() if day >= cutoff}
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
+
+    if not test_mode:
+        posted.setdefault(today, []).append(slot)
+
+        cutoff = (now.date() - datetime.timedelta(days=14)).isoformat()
+        state["meme_slots"] = {
+            day: slots for day, slots in posted.items() if day >= cutoff
+        }
+
+        with open(STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(state, f, ensure_ascii=False, indent=2)
+
     print(f"Futbol AZ memi Telegram-a göndərildi: {slot}")
