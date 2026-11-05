@@ -238,6 +238,7 @@ def state_yaz(state):
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
+
 def telegram_yenilikleri(matclar, xeberler, now):
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
@@ -311,10 +312,10 @@ def telegram_yenilikleri(matclar, xeberler, now):
         status = cari["status"]
 
         if kohne is None:
-          gunun_oyunlari.append(
-              f"🏆 {liqa}\n"
-              f"⚽ {ev} - {qonaq}\n"
-              f"🕒 Başlama vaxtı: {cari['date'][11:16]}"
+            gunun_oyunlari.append(
+                f"🏆 {liqa}\n"
+                f"⚽ {ev} - {qonaq}\n"
+                f"🕒 Başlama vaxtı: {cari['date'][11:16]}"
             )
         else:
             kohne_hesab = (
@@ -344,9 +345,12 @@ def telegram_yenilikleri(matclar, xeberler, now):
 
         yeni_matclar[fid] = cari
 
-        # Günün oyunlarını ayrıca göndər
+    # Günün oyunlarını ayrıca göndər
     if gunun_oyunlari:
-        oyun_mesaji = "⚽ GÜNÜN OYUNLARI\n\n" + "\n\n".join(gunun_oyunlari)
+        oyun_mesaji = (
+            "⚽ GÜNÜN OYUNLARI\n\n"
+            + "\n\n".join(gunun_oyunlari)
+        )
         telegrama_gonder(oyun_mesaji)
         print("Günün oyunları göndərildi:", len(gunun_oyunlari))
 
@@ -372,26 +376,10 @@ def telegram_yenilikleri(matclar, xeberler, now):
     else:
         print("Telegram üçün yeni xəbərlər və hesab dəyişiklikləri yoxdur.")
 
-        for mesaj in mesajlar:
-            if len(cari_hisse) + len(mesaj) + 2 > 3500:
-                hisseler.append(cari_hisse)
-                cari_hisse = "⚽ FUTBOL AZ — DAVAMI\n\n"
-
-            cari_hisse += mesaj + "\n\n"
-
-        if cari_hisse.strip():
-            hisseler.append(cari_hisse)
-
-        for hisse in hisseler:
-            telegrama_gonder(hisse)
-
-        print("Telegram paylaşımı göndərildi:", len(mesajlar))
-    else:
-        print("Telegram üçün yeni məlumat yoxdur.")
-
     state["news"] = list(gorulmus_xeberler)[-500:]
     state["fixtures"] = yeni_matclar
     state_yaz(state)
+
 
 
 def fixture_melumat(m):
