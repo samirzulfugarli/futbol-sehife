@@ -8,6 +8,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from memes import avtomatik_mem_paylas
 
 API_KEY = os.environ["API_FOOTBALL_KEY"].strip()
 print("Acar uzunlugu:", len(API_KEY))
@@ -443,7 +444,7 @@ def main():
     xeber_html, xeberler = xeberler_html()
 
     telegram_yenilikleri(matclar, xeberler, now)
-
+    avtomatik_mem_paylas(matclar, xeberler, now)
     sehife = (
         SABLON.replace("__KANAL__", KANAL)
         .replace("__YENILENIB__", now.strftime("%d.%m.%Y %H:%M"))
@@ -463,6 +464,6 @@ if __name__ == "__main__":
             "⚽ FUTBOL AZ\n\nTelegram botu uğurla işləyir! ✅"
         )
         print("Test mesajı göndərildi.")
-
+    samir
     main()
 
