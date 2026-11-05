@@ -31,12 +31,13 @@ jobs:
 
       - name: Sehifeni yarat
         env:
+          env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
           TELEGRAM_TEST: "0"
-          TELEGRAM_MEME_TEST: "0"
+          TELEGRAM_MEME_TEST: "1"
         run: python generate.py
 
       - name: Deyisiklik varsa yaz
