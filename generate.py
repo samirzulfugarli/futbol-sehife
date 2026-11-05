@@ -20,7 +20,7 @@ SORGULAR = ["Premyer Liqa futbol", "Qarabağ futbol"]
 LIQALAR = {
     419: "Premyer Liqa",
     420: "Azərbaycan Kuboku",
-    418: "Birinci Divizion",
+    418: "Birinci Liqa",
     2: "Çempionlar Liqası",
     3: "Avropa Liqası",
     848: "Konfrans Liqası",
