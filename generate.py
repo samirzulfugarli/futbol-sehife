@@ -278,6 +278,7 @@ def telegram_yenilikleri(matclar, xeberler, now):
     yeni_matclar = dict(evvelki_matclar)
 
     mesajlar = []
+    gunun_oyunlari = []
 
     # Yeni xəbərləri tap
     for ts, basliq, menbe, link in reversed(xeberler):
@@ -310,10 +311,10 @@ def telegram_yenilikleri(matclar, xeberler, now):
         status = cari["status"]
 
         if kohne is None:
-          mesajlar.append(
-            f"🏆 {liqa}\n"
-            f"⚽ {ev} - {qonaq}\n"
-            f"🕒 Başlama vaxtı: {cari['date'][11:16]}"
+          gunun_oyunlari.append(
+              f"🏆 {liqa}\n"
+              f"⚽ {ev} - {qonaq}\n"
+              f"🕒 Başlama vaxtı: {cari['date'][11:16]}"
             )
         else:
             kohne_hesab = (
