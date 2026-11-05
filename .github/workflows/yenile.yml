@@ -25,17 +25,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          
+
       - name: Pillow qurasdir
         run: pip install Pillow
-        
+
       - name: Sehifeni yarat
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
           TELEGRAM_TEST: "0"
-          TELEGRAM_MEME_TEST: "1"
+          TELEGRAM_MEME_TEST: "0"
         run: python generate.py
 
       - name: Deyisiklik varsa yaz
