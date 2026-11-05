@@ -133,36 +133,36 @@
       "away": "Xankəndi FK",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1630461": {
       "home": "Karvan",
       "away": "Şimal",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 2,
+      "away_goals": 0
     },
     "1630463": {
       "home": "Səbail",
       "away": "Cəbrayıl",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "1H",
+      "home_goals": 2,
+      "away_goals": 2
     },
     "1630464": {
       "home": "Zaqatala",
       "away": "MOIK",
       "league": "Birinci Dasta",
       "date": "2026-11-05T15:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "HT",
+      "home_goals": 1,
+      "away_goals": 1
     },
     "1636208": {
       "home": "AC Milan",
