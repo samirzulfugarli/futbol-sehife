@@ -322,162 +322,162 @@
       "away": "Juventus",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 2
     },
     "1636223": {
       "home": "Bayer Leverkusen",
       "away": "Marseille",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636229": {
       "home": "Benfica",
       "away": "Lech Poznan",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 3,
+      "away_goals": 1
     },
     "1636245": {
       "home": "Celta Vigo",
       "away": "Union St. Gilloise",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 2
     },
     "1636250": {
       "home": "Celtic",
       "away": "Beşiktaş",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 3,
+      "away_goals": 2
     },
     "1636264": {
       "home": "Hapoel Beer Sheva",
       "away": "OFI",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 0,
+      "away_goals": 2
     },
     "1636339": {
       "home": "Sturm Graz",
       "away": "Celje",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 3
     },
     "1636345": {
       "home": "Sunderland",
       "away": "Dinamo Zagreb",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 0,
+      "away_goals": 2
     },
     "1636347": {
       "home": "Torreense",
       "away": "Ararat-Armenia",
       "league": "UEFA Europa League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 3,
+      "away_goals": 2
     },
     "1636408": {
       "home": "FC Copenhagen",
       "away": "FC Iberia 1999",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 1
     },
     "1636416": {
       "home": "Getafe",
       "away": "Brighton",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 0,
+      "away_goals": 1
     },
     "1636447": {
       "home": "FC Lugano",
       "away": "Kauno Žalgiris",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 3,
+      "away_goals": 0
     },
     "1636456": {
       "home": "Monaco",
       "away": "FC Nordsjaelland",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 0
     },
     "1636465": {
       "home": "Panathinaikos",
       "away": "CSKA Sofia",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 1
     },
     "1636466": {
       "home": "Riga",
       "away": "FK Jablonec",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 1
     },
     "1636469": {
       "home": "St. Truiden",
       "away": "Brann",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 1,
+      "away_goals": 1
     },
     "1636478": {
       "home": "Twente",
       "away": "Pafos",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 3,
+      "away_goals": 1
     },
     "1636483": {
       "home": "Universitatea Craiova",
       "away": "Egnatia Rrogozhinë",
       "league": "UEFA Europa Conference League",
       "date": "2026-11-06T00:00:00+04:00",
-      "status": "NS",
-      "home_goals": null,
-      "away_goals": null
+      "status": "FT",
+      "home_goals": 2,
+      "away_goals": 0
     }
   }
 }
