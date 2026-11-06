@@ -478,6 +478,128 @@
       "status": "FT",
       "home_goals": 2,
       "away_goals": 0
+    },
+    "1601929": {
+      "home": "Qarabag",
+      "away": "Turan",
+      "league": "Premyer Liqa",
+      "date": "2026-11-06T18:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1601928": {
+      "home": "Neftchi Baku",
+      "away": "Kapaz",
+      "league": "Premyer Liqa",
+      "date": "2026-11-06T20:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1584462": {
+      "home": "Gaziantep FK",
+      "away": "Kasımpaşa",
+      "league": "Süper Lig",
+      "date": "2026-11-06T21:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1552216": {
+      "home": "Willem II",
+      "away": "PEC Zwolle",
+      "league": "Eredivisie",
+      "date": "2026-11-06T23:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1575218": {
+      "home": "Hamburger SV",
+      "away": "Borussia Mönchengladbach",
+      "league": "Bundesliga",
+      "date": "2026-11-06T23:30:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1646794": {
+      "home": "Bristol Rovers",
+      "away": "Cambridge United",
+      "league": "FA Cup",
+      "date": "2026-11-06T23:30:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1550196": {
+      "home": "Venezia",
+      "away": "Udinese",
+      "league": "Serie A",
+      "date": "2026-11-06T23:45:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1552817": {
+      "home": "Toulouse",
+      "away": "Strasbourg",
+      "league": "Ligue 1",
+      "date": "2026-11-06T23:45:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1646811": {
+      "home": "Oxford City",
+      "away": "Leicester",
+      "league": "FA Cup",
+      "date": "2026-11-06T23:45:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1557460": {
+      "home": "Everton",
+      "away": "Coventry",
+      "league": "Premier League",
+      "date": "2026-11-07T00:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1563256": {
+      "home": "Derby",
+      "away": "Bolton",
+      "league": "Championship",
+      "date": "2026-11-07T00:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1570450": {
+      "home": "Sevilla",
+      "away": "Alaves",
+      "league": "La Liga",
+      "date": "2026-11-07T00:00:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
+    },
+    "1575539": {
+      "home": "Famalicao",
+      "away": "Arouca",
+      "league": "Primeira Liga",
+      "date": "2026-11-07T00:45:00+04:00",
+      "status": "NS",
+      "home_goals": null,
+      "away_goals": null
     }
+  },
+  "meme_daily": {
+    "2026-11-06": [
+      18
+    ]
   }
 }
