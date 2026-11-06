@@ -5,6 +5,8 @@ import json
 import os
 import re
 import time
+import io
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -132,7 +134,7 @@ def matclar_html(matclar, now):
 
 
 def rss_sekli_tap(item):
-    """RSS daxilində varsa, xəbər üçün şəkil URL-ni tapır."""
+    """RSS-dən foto, başlıq və qısa təsvir məlumatlarını çıxarır."""
     for element in item.iter():
         tag = element.tag.lower() if isinstance(element.tag, str) else ""
         if tag.endswith("}thumbnail") or tag.endswith("}content") or tag == "enclosure":
@@ -141,46 +143,181 @@ def rss_sekli_tap(item):
             if url.startswith("https://") and (not tip or tip.startswith("image/")):
                 return url
     description = item.findtext("description") or ""
-    match = re.search(r"""<img[^>]+src=["\']([^"\']+)["\']""", description, re.I)
-    if match and match.group(1).startswith("https://"):
-        return html.unescape(match.group(1))
+    match = re.search(r"<img[^>]+src=[\"']([^\"']+)[\"']", description, re.I)
+    if match:
+        url = html.unescape(match.group(1))
+        if url.startswith("https://"):
+            return url
     return ""
 
 
-def telegram_xeber_onayina_gonder(basliq, menbe, link, sekil=""):
-    """Xəbəri adminə təsdiq üçün göndərir."""
+def rss_metn_tap(item):
+    description = item.findtext("description") or ""
+    description = html.unescape(re.sub(r"<[^>]+>", " ", description))
+    description = re.sub(r"\s+", " ", description).strip()
+    return description[:500]
+
+
+def sehife_sekli_tap(link):
+    """RSS fotosu yoxdursa, məqalənin og:image/twitter:image fotosunu axtarır."""
+    try:
+        page = get(link, {"User-Agent": "Mozilla/5.0 (compatible; FutbolAZ/1.0)"}).decode("utf-8", "ignore")
+        for pattern in (
+            r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)',
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image',
+            r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)',
+        ):
+            m = re.search(pattern, page, re.I)
+            if m:
+                image_url = html.unescape(m.group(1)).strip()
+                if image_url.startswith("https://"):
+                    return image_url
+    except Exception as e:
+        print("Məqalə fotosu tapılmadı:", e)
+    return ""
+
+
+def sekli_yukle(url):
+    if not url:
+        return None
+    try:
+        raw = get(url, {"User-Agent": "Mozilla/5.0", "Accept": "image/avif,image/webp,image/*,*/*;q=0.8"})
+        image = Image.open(io.BytesIO(raw)).convert("RGB")
+        if image.width < 320 or image.height < 180:
+            return None
+        return image
+    except Exception as e:
+        print("Xəbər fotosu yüklənmədi:", e)
+        return None
+
+
+def font_tap(size, bold=False):
+    namiz = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+    ]
+    for path in namiz:
+        if os.path.exists(path):
+            return ImageFont.truetype(path, size)
+    return ImageFont.load_default()
+
+
+def metni_sətirlərə_böl(draw, text, font, max_width):
+    words = text.split()
+    lines, current = [], ""
+    for word in words:
+        test = (current + " " + word).strip()
+        if draw.textbbox((0, 0), test, font=font)[2] <= max_width:
+            current = test
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines
+
+
+def futbolaz_xeber_qrafikasi(basliq, menbe, foto):
+    """1080x1080 Futbol AZ redaksiya üslublu xəbər kartı yaradır."""
+    W = H = 1080
+    canvas = Image.new("RGB", (W, H), (9, 18, 35))
+    if foto:
+        foto = foto.copy()
+        ratio = max(W / foto.width, 760 / foto.height)
+        foto = foto.resize((int(foto.width * ratio), int(foto.height * ratio)), Image.Resampling.LANCZOS)
+        left = (foto.width - W) // 2
+        top = max(0, (foto.height - 760) // 2)
+        foto = foto.crop((left, top, left + W, top + 760)).filter(ImageFilter.GaussianBlur(0.4))
+        canvas.paste(foto, (0, 0))
+        overlay = Image.new("RGBA", (W, 760), (0, 0, 0, 0))
+        od = ImageDraw.Draw(overlay)
+        for y in range(760):
+            alpha = int(45 + 165 * (y / 760))
+            od.line((0, y, W, y), fill=(3, 10, 23, alpha))
+        canvas.paste(overlay, (0, 0), overlay)
+    else:
+        # Foto tapılmadıqda saxta foto istifadə edilmir; brend fonlu xəbər kartı hazırlanır.
+        d = ImageDraw.Draw(canvas)
+        for y in range(760):
+            c = int(18 + 24 * y / 760)
+            d.line((0, y, W, y), fill=(7, c, 48 + c))
+        d.ellipse((650, -180, 1250, 420), outline=(24, 75, 130), width=7)
+        d.ellipse((-250, 300, 450, 1000), outline=(18, 61, 106), width=8)
+
+    d = ImageDraw.Draw(canvas)
+    d.rectangle((0, 0, W, 14), fill=(31, 190, 112))
+    d.rounded_rectangle((58, 48, 340, 122), radius=18, fill=(8, 23, 42))
+    d.text((82, 62), "FUTBOL AZ", font=font_tap(39, True), fill=(255, 255, 255))
+    d.rounded_rectangle((W-300, 58, W-58, 112), radius=14, fill=(31, 190, 112))
+    d.text((W-276, 70), "FUTBOL XƏBƏRİ", font=font_tap(23, True), fill=(5, 25, 30))
+
+    # Aşağı hissə: kontrastlı başlıq paneli.
+    d.rectangle((0, 650, W, H), fill=(7, 17, 32))
+    d.rectangle((58, 690, 148, 700), fill=(31, 190, 112))
+    title_font = font_tap(53, True)
+    lines = metni_sətirlərə_böl(d, basliq, title_font, 960)
+    if len(lines) > 4:
+        title_font = font_tap(45, True)
+        lines = metni_sətirlərə_böl(d, basliq, title_font, 960)
+    y = 730
+    for line in lines[:4]:
+        d.text((58, y), line, font=title_font, fill=(255, 255, 255))
+        y += title_font.size + 13
+    d.text((58, 1000), f"MƏNBƏ: {(menbe or 'Futbol xəbərləri')[:48]}", font=font_tap(22, True), fill=(177, 194, 211))
+    d.text((W-310, 1000), "t.me/futbolaz_official", font=font_tap(20), fill=(31, 210, 132))
+    out = io.BytesIO()
+    canvas.save(out, format="JPEG", quality=90, optimize=True)
+    out.seek(0)
+    return out
+
+
+def telegram_xeber_onayina_gonder(basliq, menbe, link, sekil="", tesvir=""):
+    """Brendli xəbər kartını adminə təsdiq üçün göndərir."""
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     admin_id = os.environ.get("TELEGRAM_ADMIN_ID", "").strip()
     if not token or not admin_id:
         raise RuntimeError("TELEGRAM_BOT_TOKEN və ya TELEGRAM_ADMIN_ID tapılmadı")
 
-    metn = (
-        "📰 FUTBOL AZ — YENİ XƏBƏR\\n\\n"
-        f"⚽ {basliq}\\n\\n"
-        f"🗞 Mənbə: {menbe or 'Mənbə göstərilməyib'}\\n"
-        f"🔗 {link}\\n\\n"
-        f"📢 {KANAL}"
-    )
     keyboard = json.dumps({"inline_keyboard": [[
         {"text": "✅ Paylaş", "callback_data": "share"},
         {"text": "❌ Ləğv et", "callback_data": "cancel"}
     ]]}, ensure_ascii=False)
-
-    if sekil:
-        endpoint = f"https://api.telegram.org/bot{token}/sendPhoto"
-        payload = {"chat_id": admin_id, "photo": sekil,
-                   "caption": metn[:1024], "reply_markup": keyboard}
+    caption = (
+        f"⚽ {basliq}\n\n"
+        + ((tesvir[:500].strip() + "\n\n") if tesvir else "")
+        + f"🗞 Mənbə: {menbe or 'Mənbə göstərilməyib'}\n"
+        + f"🔗 {link}\n"
+        + f"📢 {KANAL}"
+    )
+    photo = sekli_yukle(sekil)
+    if photo:
+        graphic = futbolaz_xeber_qrafikasi(basliq, menbe, photo)
     else:
-        endpoint = f"https://api.telegram.org/bot{token}/sendMessage"
-        payload = {"chat_id": admin_id, "text": metn,
-                   "disable_web_page_preview": "false", "reply_markup": keyboard}
+        graphic = futbolaz_xeber_qrafikasi(basliq, menbe, None)
+
+    boundary = "----FutbolAZBoundary7MA4YWxkTrZu0gW"
+    fields = {"chat_id": admin_id, "caption": caption[:1024], "reply_markup": keyboard}
+    body = bytearray()
+    for key, value in fields.items():
+        body.extend(f"--{boundary}\r\n".encode())
+        body.extend(f'Content-Disposition: form-data; name="{key}"\r\n\r\n'.encode())
+        body.extend(str(value).encode("utf-8"))
+        body.extend(b"\r\n")
+    body.extend(f"--{boundary}\r\n".encode())
+    body.extend(b'Content-Disposition: form-data; name="photo"; filename="futbolaz_xeber.jpg"\r\n')
+    body.extend(b"Content-Type: image/jpeg\r\n\r\n")
+    body.extend(graphic.getvalue())
+    body.extend(b"\r\n")
+    body.extend(f"--{boundary}--\r\n".encode())
 
     req = urllib.request.Request(
-        endpoint, data=urllib.parse.urlencode(payload).encode("utf-8"),
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        f"https://api.telegram.org/bot{token}/sendPhoto",
+        data=bytes(body),
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as response:
+    with urllib.request.urlopen(req, timeout=45) as response:
         result = json.loads(response.read().decode("utf-8"))
     if not result.get("ok"):
         raise RuntimeError(f"Xəbər təsdiqə göndərilmədi: {result}")
@@ -233,7 +370,7 @@ def xeberler_html():
             if ts > indi + 3600 or indi - ts > 3 * 86400:
                 continue
 
-            netice[link] = (ts, basliq, menbe, link, rss_sekli_tap(it))
+            netice[link] = (ts, basliq, menbe, link, rss_sekli_tap(it), rss_metn_tap(it))
 
     sirali = sorted(netice.values(), reverse=True)[:12]
 
@@ -242,7 +379,7 @@ def xeberler_html():
 
     cixis = ["<ul class='xeber'>"]
 
-    for ts, basliq, menbe, link, sekil in sirali:
+    for ts, basliq, menbe, link, sekil, tesvir in sirali:
         vaxt = datetime.datetime.fromtimestamp(
             ts, BAKU
         ).strftime("%d.%m %H:%M")
@@ -332,9 +469,10 @@ def telegram_yenilikleri(matclar, xeberler, now):
     gunun_oyunlari = []
 
     # Yeni xəbərlər: əvvəlcə adminə təsdiq üçün göndərilir.
-    for ts, basliq, menbe, link, sekil in reversed(xeberler):
+    for ts, basliq, menbe, link, sekil, tesvir in reversed(xeberler):
         if link not in gorulmus_xeberler:
-            telegram_xeber_onayina_gonder(basliq, menbe, link, sekil)
+            sekil = sekil or sehife_sekli_tap(link)
+            telegram_xeber_onayina_gonder(basliq, menbe, link, sekil, tesvir)
             xeber_mesajlari.append(link)
             gorulmus_xeberler.add(link)
 
