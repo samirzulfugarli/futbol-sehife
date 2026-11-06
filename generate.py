@@ -12,6 +12,8 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from memes import avtomatik_mem_paylas
+import visuals as V
+from athlete import idmanci_tap
 
 API_KEY = os.environ["API_FOOTBALL_KEY"].strip()
 print("Acar uzunlugu:", len(API_KEY))
@@ -218,56 +220,82 @@ def metni_sətirlərə_böl(draw, text, font, max_width):
     return lines
 
 
-def futbolaz_xeber_qrafikasi(basliq, menbe, foto):
-    """1080x1080 Futbol AZ redaksiya üslublu xəbər kartı yaradır."""
+def futbolaz_xeber_qrafikasi(basliq, menbe, foto, idmanci=None, sema=0):
+    """1080x1080 rəngli Futbol AZ xəbər kartı.
+
+    foto    – xəbər fotosu (və ya None)
+    idmanci – (ad, PIL şəkil, təsvir): xəbərdə adı çəkilən futbolçu/idmançı
+    sema    – rəng sxemi indeksi (hər xəbər fərqli rəngdə olsun)
+    """
     W = H = 1080
-    canvas = Image.new("RGB", (W, H), (9, 18, 35))
-    if foto:
-        foto = foto.copy()
-        ratio = max(W / foto.width, 760 / foto.height)
-        foto = foto.resize((int(foto.width * ratio), int(foto.height * ratio)), Image.Resampling.LANCZOS)
-        left = (foto.width - W) // 2
-        top = max(0, (foto.height - 760) // 2)
-        foto = foto.crop((left, top, left + W, top + 760)).filter(ImageFilter.GaussianBlur(0.4))
-        canvas.paste(foto, (0, 0))
-        overlay = Image.new("RGBA", (W, 760), (0, 0, 0, 0))
-        od = ImageDraw.Draw(overlay)
-        for y in range(760):
-            alpha = int(45 + 165 * (y / 760))
-            od.line((0, y, W, y), fill=(3, 10, 23, alpha))
-        canvas.paste(overlay, (0, 0), overlay)
-    else:
-        # Foto tapılmadıqda saxta foto istifadə edilmir; brend fonlu xəbər kartı hazırlanır.
-        d = ImageDraw.Draw(canvas)
-        for y in range(760):
-            c = int(18 + 24 * y / 760)
-            d.line((0, y, W, y), fill=(7, c, 48 + c))
-        d.ellipse((650, -180, 1250, 420), outline=(24, 75, 130), width=7)
-        d.ellipse((-250, 300, 450, 1000), outline=(18, 61, 106), width=8)
+    top_c, bot_c, accent = V.SCHEMES[sema % len(V.SCHEMES)]
+    PH = 700  # foto hissəsinin hündürlüyü
 
+    canvas = V.fast_gradient((W, H), top_c, bot_c)
     d = ImageDraw.Draw(canvas)
-    d.rectangle((0, 0, W, 14), fill=(31, 190, 112))
-    d.rounded_rectangle((58, 48, 340, 122), radius=18, fill=(8, 23, 42))
-    d.text((82, 62), "FUTBOL AZ", font=font_tap(39, True), fill=(255, 255, 255))
-    d.rounded_rectangle((W-300, 58, W-58, 112), radius=14, fill=(31, 190, 112))
-    d.text((W-276, 70), "FUTBOL XƏBƏRİ", font=font_tap(23, True), fill=(5, 25, 30))
 
-    # Aşağı hissə: kontrastlı başlıq paneli.
-    d.rectangle((0, 650, W, H), fill=(7, 17, 32))
-    d.rectangle((58, 690, 148, 700), fill=(31, 190, 112))
-    title_font = font_tap(53, True)
-    lines = metni_sətirlərə_böl(d, basliq, title_font, 960)
+    if idmanci:
+        # Rəngli fon üzərində iri futbolçu portreti: topla və konfettilə canlandırılır.
+        ad, portret, _ = idmanci
+        V.confetti(canvas, [V.YELLOW, V.PINK, V.BLUE, (255, 255, 255)], seed=sema + 3, region=(0, 130, W, PH), count=30)
+        d = ImageDraw.Draw(canvas)
+        V.ball(d, 900, 250, 120, patch=top_c)
+        d.ellipse((60, 90, 70, 100), fill=accent)
+        pw, ph = 600, PH - 120
+        p = V.boost(V.cover(portret, pw, ph, focus_top=0.08))
+        mask = Image.new("L", (pw, ph), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, pw - 1, ph - 1), radius=44, fill=255)
+        frame = Image.new("RGB", (pw + 24, ph + 24), accent)
+        fm = Image.new("L", frame.size, 0)
+        ImageDraw.Draw(fm).rounded_rectangle((0, 0, frame.width - 1, frame.height - 1), radius=56, fill=255)
+        canvas.paste(frame, (240 - 12, 150 - 12), fm)
+        canvas.paste(p, (240, 150), mask)
+        d = ImageDraw.Draw(canvas)
+    elif foto:
+        foto = V.boost(V.cover(foto, W, PH, focus_top=0.25)).filter(ImageFilter.GaussianBlur(0.3))
+        canvas.paste(foto, (0, 0))
+        # Aşağıya doğru rəngli (tünd qara yox) keçid
+        ov = Image.new("RGBA", (W, PH), (0, 0, 0, 0))
+        od = ImageDraw.Draw(ov)
+        for y in range(PH):
+            t = max(0.0, (y - PH * 0.45) / (PH * 0.55))
+            od.line((0, y, W, y), fill=bot_c + (int(235 * t),))
+        canvas.paste(ov, (0, 0), ov)
+        d = ImageDraw.Draw(canvas)
+    else:
+        # Foto yoxdursa: canlı rəngli fon, top və konfetti (saxta foto istifadə edilmir).
+        V.confetti(canvas, [V.YELLOW, V.PINK, V.BLUE, (255, 255, 255)], seed=sema, region=(0, 100, W, PH), count=34)
+        d = ImageDraw.Draw(canvas)
+        V.ball(d, W // 2, 380, 210, patch=top_c)
+
+    V.tricolor(d, 0, W, 16)
+    d.rounded_rectangle((50, 44, 360, 118), radius=37, fill=(255, 255, 255))
+    d.text((80, 58), "FUTBOL AZ", font=font_tap(40, True), fill=top_c)
+    V.pill(d, (W - 330, 48), "XƏBƏR", accent, (10, 20, 60) if accent != (255, 255, 255) else top_c, font_tap(26, True))
+
+    if idmanci:
+        ad = idmanci[0]
+        nf = font_tap(34, True)
+        nw = d.textbbox((0, 0), ad.upper(), font=nf)[2]
+        d.rounded_rectangle((60, PH - 50, 60 + nw + 56, PH + 20), radius=35, fill=accent)
+        d.text((88, PH - 40), ad.upper(), font=nf, fill=(10, 20, 60) if accent != (255, 255, 255) else top_c)
+
+    # Başlıq paneli
+    d.rounded_rectangle((36, PH + 44, W - 36, H - 36), radius=40, fill=(255, 255, 255))
+    d.rectangle((70, PH + 78, 190, PH + 90), fill=accent if accent != (255, 255, 255) else top_c)
+    title_font = font_tap(50, True)
+    lines = metni_sətirlərə_böl(d, basliq, title_font, 940)
     if len(lines) > 4:
-        title_font = font_tap(45, True)
-        lines = metni_sətirlərə_böl(d, basliq, title_font, 960)
-    y = 730
+        title_font = font_tap(42, True)
+        lines = metni_sətirlərə_böl(d, basliq, title_font, 940)
+    y = PH + 108
     for line in lines[:4]:
-        d.text((58, y), line, font=title_font, fill=(255, 255, 255))
-        y += title_font.size + 13
-    d.text((58, 1000), f"MƏNBƏ: {(menbe or 'Futbol xəbərləri')[:48]}", font=font_tap(22, True), fill=(177, 194, 211))
-    d.text((W-310, 1000), "t.me/futbolaz_official", font=font_tap(20), fill=(31, 210, 132))
+        d.text((70, y), line, font=title_font, fill=(15, 23, 60))
+        y += title_font.size + 12
+    d.text((70, H - 78), f"MƏNBƏ: {(menbe or 'Futbol xəbərləri')[:38]}", font=font_tap(20, True), fill=(100, 110, 140))
+    d.text((W - 340, H - 78), "t.me/futbolaz_official", font=font_tap(20, True), fill=top_c)
     out = io.BytesIO()
-    canvas.save(out, format="JPEG", quality=90, optimize=True)
+    canvas.save(out, format="JPEG", quality=92, optimize=True)
     out.seek(0)
     return out
 
@@ -291,10 +319,13 @@ def telegram_xeber_onayina_gonder(basliq, menbe, link, sekil="", tesvir=""):
         + f"📢 {KANAL}"
     )
     photo = sekli_yukle(sekil)
-    if photo:
-        graphic = futbolaz_xeber_qrafikasi(basliq, menbe, photo)
-    else:
-        graphic = futbolaz_xeber_qrafikasi(basliq, menbe, None)
+    try:
+        idmanci = idmanci_tap(basliq)  # xəbərdə adı çəkilən futbolçu/idmançı
+    except Exception as e:
+        print("İdmançı fotosu axtarışı alınmadı:", e)
+        idmanci = None
+    sema = sum(ord(c) for c in basliq) % len(V.SCHEMES)
+    graphic = futbolaz_xeber_qrafikasi(basliq, menbe, photo, idmanci, sema)
 
     boundary = "----FutbolAZBoundary7MA4YWxkTrZu0gW"
     fields = {"chat_id": admin_id, "caption": caption[:1024], "reply_markup": keyboard}

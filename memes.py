@@ -4,6 +4,8 @@ import os
 import urllib.request
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
+import visuals as V
+from athlete import idmanci_tap
 
 STATE_FILE = "telegram_state.json"
 W = H = 1080
@@ -99,6 +101,13 @@ def centered(draw, text, y, f, color, max_width=850):
         y += line_height
 
 
+def centered_v(draw, text, top, height, f, color, max_width=850):
+    """Mətni kartın şaquli mərkəzində yerləşdirir."""
+    n = len(wrap(draw, text, f, max_width))
+    block = n * (f.size + 16) - 16
+    centered(draw, text, top + (height - block) // 2 - 4, f, color, max_width)
+
+
 def load_state():
     if not os.path.exists(STATE_FILE):
         return {"initialized": False, "news": [], "fixtures": {}}
@@ -123,44 +132,49 @@ def select_topic(now, state):
     return None, None
 
 
-def make_meme(top, middle, bottom, footer, index=0, day_seed=0):
-    bg, accent, panel1, panel2, fg, muted = PALETTES[(index + day_seed) % len(PALETTES)]
-    img = Image.new("RGB", (W, H), bg)
+def make_meme(top, middle, bottom, footer, index=0, day_seed=0, idmanci=None):
+    """Rəngli futbol memi. idmanci verilərsə, xəbərdəki futbolçunun portreti əlavə olunur."""
+    n = index + day_seed
+    top_c, bot_c, accent = V.SCHEMES[n % len(V.SCHEMES)]
+    dark = (10, 20, 60)
+    on_accent = dark if accent != (255, 255, 255) else top_c
+    img = V.fast_gradient((W, H), top_c, bot_c)
+    V.confetti(img, [V.YELLOW, V.PINK, V.BLUE, (255, 255, 255)], seed=n, count=36)
     draw = ImageDraw.Draw(img)
-    style = (index + day_seed) % 4
+    V.tricolor(draw, 0, W, 18)
+    V.tricolor(draw, H - 18, W, 18)
 
-    draw.rounded_rectangle((38, 38, 1042, 1042), radius=48, outline=accent, width=8)
-    draw.text((78, 72), "FUTBOL AZ", font=font(42), fill=accent)
-    draw.text((80, 132), f"FUTBOL MEMİ  •  {index + 1:02d}/40", font=font(23, False), fill=muted)
+    # Başlıq zolağı
+    draw.rounded_rectangle((40, 46, 330, 116), radius=35, fill=(255, 255, 255))
+    draw.text((68, 58), "FUTBOL AZ", font=font(38), fill=top_c)
+    V.pill(draw, (W - 330, 48), f"MEM  {index + 1:02d}/40", accent, on_accent, font(26))
 
-    if style == 0:
-        centered(draw, top, 235, font(56), fg, 900)
-        draw.rounded_rectangle((85, 405, 995, 625), radius=34, fill=panel1)
-        centered(draw, middle, 465, font(39), fg, 820)
-        draw.rounded_rectangle((85, 665, 995, 885), radius=34, fill=panel2)
-        centered(draw, bottom, 725, font(39), fg, 820)
-    elif style == 1:
-        draw.rounded_rectangle((70, 245, 1010, 510), radius=36, fill=panel1)
-        centered(draw, top, 310, font(55), fg, 850)
-        centered(draw, middle, 570, font(39), accent, 850)
-        draw.line((150, 700, 930, 700), fill=accent, width=8)
-        centered(draw, bottom, 760, font(42), fg, 850)
-    elif style == 2:
-        centered(draw, top, 245, font(58), accent, 900)
-        draw.ellipse((120, 430, 390, 700), outline=accent, width=12)
-        draw.ellipse((690, 430, 960, 700), outline=accent, width=12)
-        centered(draw, "MƏN", 525, font(35), fg, 220)
-        centered(draw, "HƏQİQƏT", 525, font(30), fg, 240)
-        centered(draw, middle, 735, font(35), fg, 850)
-        centered(draw, bottom, 835, font(35), accent, 850)
+    portrait_h = 0
+    if idmanci:
+        ad, portret, _ = idmanci
+        ring = V.circle_portrait(V.boost(portret), 250, ring=accent, ring_w=12)
+        img.paste(ring, (W // 2 - ring.width // 2, 140), ring)
+        draw = ImageDraw.Draw(img)
+        nf = font(26)
+        nw = draw.textbbox((0, 0), ad.upper(), font=nf)[2]
+        draw.rounded_rectangle((W // 2 - nw // 2 - 24, 408, W // 2 + nw // 2 + 24, 452), radius=22, fill=accent)
+        draw.text((W // 2 - nw // 2, 413), ad.upper(), font=nf, fill=on_accent)
+        portrait_h = 320
     else:
-        draw.rectangle((70, 250, 1010, 565), fill=panel1)
-        centered(draw, top, 330, font(55), fg, 850)
-        draw.rectangle((70, 600, 1010, 900), fill=panel2)
-        centered(draw, middle + "  →  " + bottom, 680, font(38), fg, 850)
+        V.ball(draw, W // 2, 215, 80, patch=top_c)
+        portrait_h = 160
 
-    draw.text((80, 970), str(footer)[:65], font=font(21, False), fill=muted)
-    draw.text((820, 970), "@FUTBOLAZ", font=font(22), fill=accent)
+    y0 = 140 + portrait_h
+    # Üç rəngli kart: mövzu / ilk sətir / ikinci sətir
+    draw.rounded_rectangle((60, y0, W - 60, y0 + 140), radius=36, fill=accent)
+    centered_v(draw, top, y0, 140, font(46), on_accent, 880)
+    draw.rounded_rectangle((60, y0 + 160, W - 60, y0 + 330), radius=36, fill=(255, 255, 255))
+    centered_v(draw, middle, y0 + 160, 170, font(36), dark, 840)
+    draw.rounded_rectangle((60, y0 + 350, W - 60, y0 + 520), radius=36, fill=dark)
+    centered_v(draw, bottom, y0 + 350, 170, font(36), (255, 255, 255), 840)
+
+    draw.text((70, H - 70), str(footer)[:50], font=font(21, False), fill=(255, 255, 255))
+    draw.text((W - 270, H - 72), "@FUTBOLAZ", font=font(24), fill=accent)
     return img
 
 
@@ -244,7 +258,16 @@ def avtomatik_mem_paylas(matclar, xeberler, now):
             footer = f"{home} – {away}"
 
     day_seed = now.date().toordinal()
-    img = make_meme(top, middle, bottom, footer, idx, day_seed)
+    # Son xəbərlərdə adı keçən futbolçu/idmançı varsa, memə onun portreti əlavə olunur.
+    idmanci = None
+    for item in (xeberler or [])[:3]:
+        try:
+            idmanci = idmanci_tap(item[1])
+        except Exception as e:
+            print("Mem üçün idmançı fotosu tapılmadı:", e)
+        if idmanci:
+            break
+    img = make_meme(top, middle, bottom, footer, idx, day_seed, idmanci)
     caption = f"😂 {top}\n\n{middle}\n{bottom}\n\n⚽ @futbolaz_official"
     result = send_photo(img, caption)
 
